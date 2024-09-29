@@ -1,6 +1,7 @@
 package com.example.mobile_development_lab_06
 
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobile_development_lab_06.databinding.FragmentCrimeListBinding
 import com.example.mobile_development_lab_06.databinding.ListItemCrimeBinding // Добавьте этот импорт
 import com.example.mobile_development_lab_06.databinding.ListItemSeriousCrimeBinding
+import java.util.Date
 
 private const val TAG = "CrimeListFragment"
 
@@ -67,13 +69,28 @@ class CrimeListFragment : Fragment() {
         fun bind(crime: Crime) {
             this.crime = crime
             binding.crimeTitle.text = this.crime.title
-            binding.crimeDate.text = this.crime.date.toString()
+
+            // Форматируем дату
+            val formattedDate = formatDate(crime.date)
+            binding.crimeDate.text = formattedDate
+
+            binding.crimeSolved.visibility =
+                if (crime.isSolved) View.VISIBLE
+                else View.GONE
+        }
+
+        private fun formatDate(date: Date): String {
+            // Форматируем дату в виде "Monday, Jul 22, 2019"
+            val dayOfWeek = DateFormat.format("EEEE", date).toString() // Получаем день недели
+            val monthDayYear = DateFormat.format("MMM dd, yyyy", date).toString() // Форматируем оставшуюся часть даты
+            return "$dayOfWeek, $monthDayYear" // Объединяем строки
         }
 
         override fun onClick(v: View) {
             Toast.makeText(context, "${this.crime.title} pressed!", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private inner class CrimeAdapter(private val crimes: List<Crime>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
