@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
+//    kotlin("kapt")
+//    id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -40,6 +43,20 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.androidx.lifecycle.viewmodel.ktx) // Замените на актуальную версию
+    implementation(libs.androidx.lifecycle.livedata.ktx) // Замените на актуальную версию
+
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    // To use Kotlin Symbol Processing (KSP)
+    ksp(libs.room.compiler)
+
+    implementation(libs.androidx.activity.ktx) // Замените на актуальную версию
+    implementation(libs.androidx.fragment.ktx) // Замените на актуальную версию
+    implementation(libs.androidx.lifecycle.viewmodel.ktx.v280) // Замените на актуальную версию
+    implementation(libs.androidx.lifecycle.livedata.ktx.v280)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
