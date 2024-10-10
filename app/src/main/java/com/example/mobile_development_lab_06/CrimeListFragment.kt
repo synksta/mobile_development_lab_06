@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobile_development_lab_06.databinding.FragmentCrimeListBinding
-import com.example.mobile_development_lab_06.databinding.ListItemCrimeBinding // Добавьте этот импорт
-import com.example.mobile_development_lab_06.databinding.ListItemSeriousCrimeBinding
+import com.example.mobile_development_lab_06.databinding.ListItemCrimeBinding
 import java.util.Date
 import java.util.UUID
 
@@ -46,7 +48,11 @@ class CrimeListFragment : Fragment() {
         super.onDetach()
         callbacks = null
     }
-
+//
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        inflater.inflate(R.menu.fragment_crime_list, menu)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,18 +72,112 @@ class CrimeListFragment : Fragment() {
         adapter = CrimeAdapter(crimes)
         binding.crimeRecyclerView.adapter = adapter
     }
+//
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        crimeListViewModel.crimeListLiveData.observe(
+//            viewLifecycleOwner,
+//            Observer { crimes ->
+//                crimes?.let {
+//                    Log.i(TAG, "Got crimes${crimes.size}")
+//                    updateUI(crimes)
+//                }
+//            })
+//    }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//
+//        // Получаем menuHost из активности
+//        val menuHost: MenuHost = requireActivity()
+//
+//        // Добавляем MenuProvider
+//        menuHost.addMenuProvider(object : MenuProvider {
+//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//                menuInflater.inflate(R.menu.fragment_crime_list, menu)
+//            }
+//
+//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//                return when (menuItem.itemId) {
+////                    R.id.some_menu_item -> {
+////                        // Код для обработки нажатия на элемент меню
+////                        true
+////                    }
+//                    else -> false
+//                }
+//            }
+//        }, viewLifecycleOwner)
+//
+//        // Наблюдаем за изменениями в crimeListLiveData
+//        crimeListViewModel.crimeListLiveData.observe(viewLifecycleOwner) { crimes ->
+//            crimes?.let {
+//                Log.i(TAG, "Got crimes: ${crimes.size}")
+//                updateUI(crimes)
+//            }
+//        }
+//    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        crimeListViewModel.crimeListLiveData.observe(
-            viewLifecycleOwner,
-            Observer { crimes ->
-                crimes?.let {
-                    Log.i(TAG, "Got crimes${crimes.size}")
-                    updateUI(crimes)
+
+        // Получаем menuHost из активности
+        val menuHost: MenuHost = requireActivity()
+
+        // Добавляем MenuProvider
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_crime_list, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.new_crime -> {
+                        Log.d("CrimeListFragment", "New crime clicked!")
+                        val crime: Crime = Crime()
+                        crimeListViewModel.addCrime(crime)
+                        callbacks?.onCrimeSelected(crime.id)
+                        true
+                    }
+//                    else -> return super.onOptionsItemSelected(item)
+                    else -> false
+
                 }
-            })
+            }
+        }, viewLifecycleOwner)
+
+        // Наблюдаем за изменениями в crimeListLiveData
+        crimeListViewModel.crimeListLiveData.observe(viewLifecycleOwner) { crimes ->
+            crimes?.let {
+                Log.i(TAG, "Got crimes: ${crimes.size}")
+                updateUI(crimes)
+            }
+        }
     }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//
+//        val menuHost: MenuHost = requireActivity()
+//
+//        menuHost.addMenuProvider(object : MenuProvider {
+//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//                menuInflater.inflate(R.menu.fragment_crime_list, menu)
+//            }
+//
+//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//                return when (menuItem.itemId) {
+//                    R.id.new_crime -> {
+//                        showNewCrime()
+//                        true
+//                    }
+//                    else -> false
+//                }
+//            }
+//        }, viewLifecycleOwner)
+//    }
+
+
 
 
     private inner class CrimeHolder(private val binding: ListItemCrimeBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
